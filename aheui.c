@@ -9,19 +9,29 @@
 //release_mode == 0
 #define DEBUG_LEVEL 1
 #define han_byte 3
+
+typedef unsigned int han;
+
+//<variables>
+
+char choseong[19][4] = {"ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"};
+char jungseong[21][4] = {"ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ"};
+char jongseong[29][4] = {"X","ㄱ","ㄲ","ㄳ","ㄴ","ㄵ","ㄶ","ㄷ","ㄹ","ㄺ","ㄻ","ㄼ","ㄽ","ㄾ","ㄿ","ㅀ","ㅁ","ㅂ","ㅄ","ㅅ","ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"};
+
 /* hangul error
 typedef enum choseong {ㄱ,ㄲ,ㄴ,ㄷ,ㄸ,ㄹ,ㅁ,ㅂ,ㅃ,ㅅ,ㅆ,ㅇ,ㅈ,ㅉ,ㅊ,ㅋ,ㅌ,ㅍ,ㅎ}choseong;
 typedef enum jungseong {ㅏ,ㅔ,ㅑ,ㅒ,ㅓ,ㅔ,ㅕ,ㅖ,ㅗ,ㅘ,ㅙ,ㅚ,ㅛ,ㅜ,ㅝ,ㅞ,ㅟ,ㅠ,ㅡ,ㅢ,ㅣ}jungseong;
 typedef enum jongseong {X,ㄱ,ㄲ,ㄳ,ㄴ,ㄵ,ㄶ,ㄷ,ㄹ,ㄺ,ㄻ,ㄼ,ㄽ,ㄾ,ㄿ,ㅀ,ㅁ,ㅂ,ㅄ,ㅅ,ㅆ,ㅇ,ㅈ,ㅊ,ㅋ,ㅌ,ㅍ,ㅎ}jongseong;
 */
 
-typedef unsigned int han;
 
 typedef struct combi {
-	han cho;
-	han jung;
-	han jong;
+	char * cho;
+	char * jung;
+	char * jong;
 }combi;
+
+//</variables>
 
 //<header>
 
@@ -29,6 +39,7 @@ bool help(int argc,char * argv[]);
 
 han ** transfer_han(char *);
 combi ** tranfer_combi(han **);
+void run_aheui(combi **);
 
 //</header>
 
@@ -59,17 +70,18 @@ int main(int argc,char * argv[]) {
 	for(int i = 0;i<height;i++) {
 		free(data[i]);
 	}
-	free(data);
 	//free memories of data;
-
+	free(data);
 	fclose(fp);
+
 	/*for(int i = 0;i<height;i++) {
 		for(int j = 0;j<width;j++) {
-			printf("%x ",data[i][j]);
+			printf("%s %s %s\n",data_combi[i][j].cho,data_combi[i][j].jung,data_combi[i][j].jong);
 		}
 		puts("");
 	}*/
 
+	run_aheui(data_combi);
 
 	return 0;
 }
@@ -108,7 +120,7 @@ han ** transfer_han(char * buffer) {
 
 	height = enter_couter+1;
 	width /= han_byte;
-	printf("%d %d %d\n",height,width,buffer_size);
+	//printf("%d %d %d\n",height,width,buffer_size);
 	data = (han**)malloc(sizeof(han*) * (height));
 	for(int i = 0;i<height;i++) {
 		data[i] = (han *)malloc(sizeof(han) * (width));
@@ -148,11 +160,23 @@ combi ** tranfer_combi(han ** data) {
 	}
 	//malloc memoires
 
-	//seperate jaso
+	//jaso seperate
 	for(int i = 0;i<height;i++) {
 		for(int j = 0;j<width;j++) {
+			int cho = (data[i][j]-44032)/(21*28);
+			int jung = (data[i][j]-44032-(cho*21*28))/28;
+			int jong  = (data[i][j]-44032-(cho*21*28)-(jung*28));
+			data_combi[i][j].cho = choseong[cho];
+			data_combi[i][j].jung = jungseong[jung];
+			data_combi[i][j].jong = jongseong[jong];
+			//printf("%s %s %s\n",data_combi[i][j].cho,data_combi[i][j].jung,data_combi[i][j].jong);
 		}
 	}
+	return data_combi;
 }
+
+void run_aheui(combi ** data) {
+		
+};
 
 //</functions>
