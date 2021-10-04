@@ -8,9 +8,30 @@
 //debug_mode == 1
 //release_mode == 0
 #define DEBUG_LEVEL 1
-#define han_byte 3
+#define HAN_BYTE    3
+#define STACK_COUNT 26
+#define QUEUE_COUNT 1
 
 typedef unsigned int han;
+
+typedef struct combi {
+	char * cho;
+	char * jung;
+	char * jong;
+}combi;
+
+typedef struct node {
+	int data;
+	struct node * next;
+}node;
+
+typedef struct stack {
+	node * data;
+}stack;
+
+typedef struct queue {
+	node * data;
+}queue;
 
 //<variables>
 
@@ -18,18 +39,14 @@ char choseong[19][4] = {"ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","�
 char jungseong[21][4] = {"ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ"};
 char jongseong[29][4] = {"X","ㄱ","ㄲ","ㄳ","ㄴ","ㄵ","ㄶ","ㄷ","ㄹ","ㄺ","ㄻ","ㄼ","ㄽ","ㄾ","ㄿ","ㅀ","ㅁ","ㅂ","ㅄ","ㅅ","ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"};
 
+stack * st[26];
+queue * qu;
+
 /* hangul error
 typedef enum choseong {ㄱ,ㄲ,ㄴ,ㄷ,ㄸ,ㄹ,ㅁ,ㅂ,ㅃ,ㅅ,ㅆ,ㅇ,ㅈ,ㅉ,ㅊ,ㅋ,ㅌ,ㅍ,ㅎ}choseong;
 typedef enum jungseong {ㅏ,ㅔ,ㅑ,ㅒ,ㅓ,ㅔ,ㅕ,ㅖ,ㅗ,ㅘ,ㅙ,ㅚ,ㅛ,ㅜ,ㅝ,ㅞ,ㅟ,ㅠ,ㅡ,ㅢ,ㅣ}jungseong;
 typedef enum jongseong {X,ㄱ,ㄲ,ㄳ,ㄴ,ㄵ,ㄶ,ㄷ,ㄹ,ㄺ,ㄻ,ㄼ,ㄽ,ㄾ,ㄿ,ㅀ,ㅁ,ㅂ,ㅄ,ㅅ,ㅆ,ㅇ,ㅈ,ㅊ,ㅋ,ㅌ,ㅍ,ㅎ}jongseong;
 */
-
-
-typedef struct combi {
-	char * cho;
-	char * jung;
-	char * jong;
-}combi;
 
 //</variables>
 
@@ -40,6 +57,16 @@ bool help(int argc,char * argv[]);
 han ** transfer_han(char *);
 combi ** tranfer_combi(han **);
 void run_aheui(combi **);
+//stack
+void stack_pop(stack *); 
+int stack_top(stack *);
+void stack_push(stack *,int);
+//queue
+void queue_pop(queue *); 
+int queue_top(queue *);
+void queue_push(queue *,int);
+
+int data_structure_index(char *);
 
 //</header>
 
@@ -58,11 +85,13 @@ int main(int argc,char * argv[]) {
 #if DEBUG_LEVEL == 1
 	FilePath = "test.ahui";
 #endif
+	//read file
 	fp = fopen(FilePath,"r");
 	char buffer[MAX] = { 0, };
 
 	fread(buffer,1,MAX,fp);
 
+	//transrate
 	han ** data = transfer_han(buffer);
 
 	combi ** data_combi = tranfer_combi(data);
@@ -80,6 +109,10 @@ int main(int argc,char * argv[]) {
 		}
 		puts("");
 	}*/
+
+	for(int i = 0;i<STACK_COUNT;i++) {
+		st[i] = malloc(sizeof(stack));
+	}	
 
 	run_aheui(data_combi);
 
@@ -119,7 +152,7 @@ han ** transfer_han(char * buffer) {
 	}
 
 	height = enter_couter+1;
-	width /= han_byte;
+	width /= HAN_BYTE;
 	//printf("%d %d %d\n",height,width,buffer_size);
 	data = (han**)malloc(sizeof(han*) * (height));
 	for(int i = 0;i<height;i++) {
@@ -178,5 +211,73 @@ combi ** tranfer_combi(han ** data) {
 void run_aheui(combi ** data) {
 		
 };
+
+void stack_pop(stack * s) {
+	if(s->data != NULL) {
+		node * n = s->data;
+		s->data = s->data->next;
+		free(n);
+	}
+	return;
+}
+int stack_top(stack * s) {
+	return s->data->data;
+}
+void stack_push(stack * s,int data) {
+	node * n = (node*)malloc(sizeof(node));
+	n->next = NULL;
+	n->data = data;
+	if(s->data == NULL) {
+		s->data = n;
+	}
+	else {
+		n->next = s->data;
+		s->data = n;
+	}
+}
+
+void queue_pop(queue * q) {
+	if(q->data != NULL) {
+		node * prev = NULL;
+		for(node * i = q->data;i->next != NULL;i = i->next) {
+			prev = i;
+		}
+		if(prev == NULL) {
+			q->data = NULL;
+			free(q->data);
+		}
+		else {
+			free(prev->next);
+			prev->next = NULL;
+		}
+	}
+}
+int queue_top(queue * q) {
+	if(q->data != NULL) {
+		node * prev = NULL;
+		for(node * i = q->data;i->next != NULL;i = i->next) {
+			prev = i;
+		}
+		if(prev == NULL) {
+			return q->data->data;
+		}
+		else {
+			return prev->next->data;
+		}
+	}
+	else return -1;
+}
+void queue_push(queue * q,int data) {
+	node * n = (node*)malloc(sizeof(node));
+	n->next = NULL;
+	n->data = data;
+	if(q->data == NULL) {
+		q->data = n;
+	}
+	else {
+		n->next = q->data;
+		q->data = n;
+	}
+}
 
 //</functions>
