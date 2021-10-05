@@ -121,6 +121,7 @@ int main(int argc,char * argv[]) {
 
 	for(int i = 0;i<STACK_COUNT;i++) {
 		st[i] = (stack *)malloc(sizeof(stack));
+		st[i]->data = NULL;
 	}	
 	qu = (queue *)malloc(sizeof(queue));
 
@@ -291,7 +292,7 @@ void run_aheui(combi ** data) {
 				printf("%d",data_set_top(data_set));
 				data_set_pop(data_set);
 			}
-			if(strcmp(data[i][j].jong,"ㅎ") == 0) {
+			else if(strcmp(data[i][j].jong,"ㅎ") == 0) {
 				printf("%c",data_set_top(data_set));
 				data_set_pop(data_set);
 			}
@@ -303,7 +304,7 @@ void run_aheui(combi ** data) {
 				scanf("%d",&tmp);
 				data_set_push(data_set,tmp);
 			}
-			if(strcmp(data[i][j].jong,"ㅎ") == 0){
+			else if(strcmp(data[i][j].jong,"ㅎ") == 0){
 				char c;
 				printf("한 문자를 입력하세요 :");
 				scanf("%c",&c);
