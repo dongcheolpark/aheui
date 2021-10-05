@@ -149,16 +149,22 @@ han ** transfer_han(char * buffer) {
 	han ** data;
 	int enter_couter=0;
 	int buffer_size = 0;
-
-	for(int i = 0;i<MAX;i++) {
+	int tmp = 0;
+	for(int i = 0;i<MAX;i++,tmp++) {
 		if(buffer[i] == '\0') {
 			buffer_size = i;
-			if(width == 0) width = i;
+			if(width < tmp) {
+				width = tmp;
+			} 
+			tmp = 0;
 			break;
 		}
 		if(buffer[i] == '\n') {
 			enter_couter++;
-			if(width == 0) width = i;
+			if(width < tmp) {
+				width = tmp;
+			} 
+			tmp = 0;
 		}
 	}
 
@@ -353,6 +359,19 @@ void run_aheui(combi ** data) {
 		}
 		else if(strcmp(data[i][j].jung,"ㅜ") == 0) {
 			i++;
+		}
+
+		if(strcmp(data[i][j].jung,"ㅑ") == 0) {
+			j+=2;
+		}
+		else if(strcmp(data[i][j].jung,"ㅕ") == 0) {
+			j-=2;
+		}
+		else if(strcmp(data[i][j].jung,"ㅛ") == 0) {
+			i-=2;
+		}
+		else if(strcmp(data[i][j].jung,"ㅠ") == 0) {
+			i+=2;
 		}
 	}
 };
