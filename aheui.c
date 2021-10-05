@@ -12,6 +12,10 @@
 #define STACK_COUNT 26
 #define QUEUE_COUNT 1
 
+#define CHO_SIZE    19
+#define JUNG_SIZE   21
+#define JONG_SIZE   28
+
 typedef unsigned int han;
 
 typedef struct combi {
@@ -37,7 +41,7 @@ typedef struct queue {
 
 char choseong[19][4] = {"ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"};
 char jungseong[21][4] = {"ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ"};
-char jongseong[29][4] = {"X","ㄱ","ㄲ","ㄳ","ㄴ","ㄵ","ㄶ","ㄷ","ㄹ","ㄺ","ㄻ","ㄼ","ㄽ","ㄾ","ㄿ","ㅀ","ㅁ","ㅂ","ㅄ","ㅅ","ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"};
+char jongseong[28][4] = {"X","ㄱ","ㄲ","ㄳ","ㄴ","ㄵ","ㄶ","ㄷ","ㄹ","ㄺ","ㄻ","ㄼ","ㄽ","ㄾ","ㄿ","ㅀ","ㅁ","ㅂ","ㅄ","ㅅ","ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"};
 
 stack * st[26];
 queue * qu;
@@ -66,7 +70,7 @@ void queue_pop(queue *);
 int queue_top(queue *);
 void queue_push(queue *,int);
 
-int data_structure_index(char *);
+void * data_structure_index(char *);
 
 //</header>
 
@@ -111,8 +115,9 @@ int main(int argc,char * argv[]) {
 	}*/
 
 	for(int i = 0;i<STACK_COUNT;i++) {
-		st[i] = malloc(sizeof(stack));
+		st[i] = (stack *)malloc(sizeof(stack));
 	}	
+	qu = (queue *)malloc(sizeof(queue));
 
 	run_aheui(data_combi);
 
@@ -209,7 +214,62 @@ combi ** tranfer_combi(han ** data) {
 }
 
 void run_aheui(combi ** data) {
-		
+	int i = 0,j = 0;
+	void * data_set = st[0];
+	while(1) {
+		printf("%d %d\n",i,j);
+		//ㅇ set
+		if(strcmp(data[i][j].cho,"ㅇ") == 0) {
+			//do nothing
+		}
+		else if(strcmp(data[i][j].cho,"ㅎ") == 0) {
+			break;
+		}
+		//ㄷ set
+		else if(strcmp(data[i][j].cho,"ㄷ") == 0) {
+		}
+		else if(strcmp(data[i][j].cho,"ㄸ") == 0) {
+		}
+		else if(strcmp(data[i][j].cho,"ㅌ") == 0) {
+		}
+		else if(strcmp(data[i][j].cho,"ㄴ") == 0) {
+		}
+		else if(strcmp(data[i][j].cho,"ㄹ") == 0) {
+		}
+		//ㅁ set
+		else if(strcmp(data[i][j].cho,"ㅁ") == 0) {
+		}
+		else if(strcmp(data[i][j].cho,"ㅂ") == 0) {
+		}
+		else if(strcmp(data[i][j].cho,"ㅃ") == 0) {
+		}
+		else if(strcmp(data[i][j].cho,"ㅍ") == 0) {
+		}
+		//ㅅ set
+		else if(strcmp(data[i][j].cho,"ㅅ") == 0) {
+		}
+		else if(strcmp(data[i][j].cho,"ㅆ") == 0) {
+		}
+		else if(strcmp(data[i][j].cho,"ㅈ") == 0) {
+		}
+		else if(strcmp(data[i][j].cho,"ㅊ") == 0) {
+		}
+
+		//move pointer
+
+		if(strcmp(data[i][j].jung,"ㅏ") == 0) {
+			j++;
+		}
+		else if(strcmp(data[i][j].jung,"ㅓ") == 0) {
+			j--;
+		}
+		else if(strcmp(data[i][j].jung,"ㅗ") == 0) {
+			i--;
+		}
+		else if(strcmp(data[i][j].jung,"ㅜ") == 0) {
+			i++;
+		}
+	}
 };
 
 void stack_pop(stack * s) {
@@ -279,5 +339,23 @@ void queue_push(queue * q,int data) {
 		q->data = n;
 	}
 }
-
+void * data_structure_index(char * jong) {
+	int index = 0;
+	for(int i = 0;i<JONG_SIZE;i++) {
+		if(strcmp(jongseong[i],"ㅇ") == 0 ||strcmp(jongseong[i],"ㅎ") == 0) {
+			if(strcmp(jong,"ㅇ") == 0) {
+				return qu;
+			}
+			else if(strcmp(jong,"ㅇ") == 0) {
+				return NULL;
+			}
+			continue;
+		}
+		else if(strcmp(jong,jongseong[i]) == 0) {
+			return st[index];
+		}
+		index++;
+	}
+	return NULL;
+}
 //</functions>
