@@ -42,9 +42,13 @@ typedef struct queue {
 char choseong[19][4] = {"ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"};
 char jungseong[21][4] = {"ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ"};
 char jongseong[28][4] = {"X","ㄱ","ㄲ","ㄳ","ㄴ","ㄵ","ㄶ","ㄷ","ㄹ","ㄺ","ㄻ","ㄼ","ㄽ","ㄾ","ㄿ","ㅀ","ㅁ","ㅂ","ㅄ","ㅅ","ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"};
+int jongseong_line[28] = {0,2,4,4,2,5,5,3,5,7,9,9,7,9,9,8,4,4,6,2,4,0,3,4,3,4,4,0};
 
 stack * st[26];
 queue * qu;
+
+// sw == 0 -> stack, 1-> queue
+int sw = 0;
 
 /* hangul error
 typedef enum choseong {ㄱ,ㄲ,ㄴ,ㄷ,ㄸ,ㄹ,ㅁ,ㅂ,ㅃ,ㅅ,ㅆ,ㅇ,ㅈ,ㅉ,ㅊ,ㅋ,ㅌ,ㅍ,ㅎ}choseong;
@@ -71,6 +75,7 @@ int queue_top(queue *);
 void queue_push(queue *,int);
 
 void * data_structure_index(char *);
+int jong_num(char *);
 
 //</header>
 
@@ -216,8 +221,22 @@ combi ** tranfer_combi(han ** data) {
 void run_aheui(combi ** data) {
 	int i = 0,j = 0;
 	void * data_set = st[0];
+	void (* data_set_pop)(void *);
+	int (* data_set_top)(void *);
+	void (* data_set_push)(void *,int);
 	while(1) {
-		printf("%d %d\n",i,j);
+		//printf("%d %d\n",i,j);
+		if(sw == 0) {
+			data_set_pop = stack_pop;
+			data_set_top = stack_top;
+			data_set_push = stack_push;
+		}
+		else {
+			data_set_pop = queue_pop;
+			data_set_top = queue_top;
+			data_set_push = queue_push;
+		}
+
 		//ㅇ set
 		if(strcmp(data[i][j].cho,"ㅇ") == 0) {
 			//do nothing
@@ -227,26 +246,91 @@ void run_aheui(combi ** data) {
 		}
 		//ㄷ set
 		else if(strcmp(data[i][j].cho,"ㄷ") == 0) {
+			int a,b;
+			a = data_set_top(data_set);
+			data_set_pop(data_set);
+			b = data_set_top(data_set);
+			data_set_pop(data_set);
+			data_set_push(data_set,a+b);
 		}
 		else if(strcmp(data[i][j].cho,"ㄸ") == 0) {
+			int a,b;
+			a = data_set_top(data_set);
+			data_set_pop(data_set);
+			b = data_set_top(data_set);
+			data_set_pop(data_set);
+			data_set_push(data_set,a*b);
 		}
 		else if(strcmp(data[i][j].cho,"ㅌ") == 0) {
+			int a,b;
+			a = data_set_top(data_set);
+			data_set_pop(data_set);
+			b = data_set_top(data_set);
+			data_set_pop(data_set);
+			data_set_push(data_set,b-a);
 		}
 		else if(strcmp(data[i][j].cho,"ㄴ") == 0) {
+			int a,b;
+			a = data_set_top(data_set);
+			data_set_pop(data_set);
+			b = data_set_top(data_set);
+			data_set_pop(data_set);
+			data_set_push(data_set,b/a);
 		}
 		else if(strcmp(data[i][j].cho,"ㄹ") == 0) {
+			int a,b;
+			a = data_set_top(data_set);
+			data_set_pop(data_set);
+			b = data_set_top(data_set);
+			data_set_pop(data_set);
+			data_set_push(data_set,b%a);
 		}
 		//ㅁ set
 		else if(strcmp(data[i][j].cho,"ㅁ") == 0) {
-		}
+			if(strcmp(data[i][j].jong,"ㅇ") == 0) {
+				printf("%d",data_set_top(data_set));
+				data_set_pop(data_set);
+			}
+			if(strcmp(data[i][j].jong,"ㅎ") == 0) {
+				printf("%c",data_set_top(data_set));
+				data_set_pop(data_set);
+			}
+		} 
 		else if(strcmp(data[i][j].cho,"ㅂ") == 0) {
+			if(strcmp(data[i][j].jong,"ㅇ") == 0) {
+				int tmp;
+				printf("한 정수를 입력하세요 :");
+				scanf("%d",&tmp);
+				data_set_push(data_set,tmp);
+			}
+			if(strcmp(data[i][j].jong,"ㅎ") == 0){
+				char c;
+				printf("한 문자를 입력하세요 :");
+				scanf("%c",&c);
+				data_set_push(data_set,c);
+			} 
+			else {
+				data_set_push(data_set,jong_num(data[i][j].jong));
+				//printf("%d\n",data_set_top(data_set));
+			}
 		}
 		else if(strcmp(data[i][j].cho,"ㅃ") == 0) {
+			data_set_push(data_set,data_set_top(data_set));
 		}
 		else if(strcmp(data[i][j].cho,"ㅍ") == 0) {
+			if(sw == 0) {
+				int a,b;
+				a = data_set_top(data_set);
+				data_set_pop(data_set);
+				b = data_set_top(data_set);
+				data_set_pop(data_set);
+				data_set_push(data_set,a);
+				data_set_push(data_set,b);
+			}
 		}
 		//ㅅ set
 		else if(strcmp(data[i][j].cho,"ㅅ") == 0) {
+			data_set = data_structure_index(data[i][j].jong);
 		}
 		else if(strcmp(data[i][j].cho,"ㅆ") == 0) {
 		}
@@ -344,18 +428,31 @@ void * data_structure_index(char * jong) {
 	for(int i = 0;i<JONG_SIZE;i++) {
 		if(strcmp(jongseong[i],"ㅇ") == 0 ||strcmp(jongseong[i],"ㅎ") == 0) {
 			if(strcmp(jong,"ㅇ") == 0) {
+				sw = 1;
 				return qu;
 			}
-			else if(strcmp(jong,"ㅇ") == 0) {
+			else if(strcmp(jong,"ㅎ") == 0) {
 				return NULL;
 			}
 			continue;
 		}
 		else if(strcmp(jong,jongseong[i]) == 0) {
+			sw = 0;
 			return st[index];
 		}
 		index++;
 	}
 	return NULL;
+}
+
+int jong_num(char * _jong) {
+	int jong = 0;
+	for(int i = 0;i<JONG_SIZE;i++) {
+		if(strcmp(_jong,jongseong[i]) == 0) {
+			jong = i;
+			break;
+		}
+	}
+	return jongseong_line[jong];
 }
 //</functions>
