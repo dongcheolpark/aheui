@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define MAX 1000
+#define MAX 100000
 
 //debug_mode == 1
 //release_mode == 0
@@ -15,6 +15,8 @@
 #define CHO_SIZE    19
 #define JUNG_SIZE   21
 #define JONG_SIZE   28
+
+#define reverse(X) -X
 
 typedef unsigned int han;
 
@@ -69,10 +71,12 @@ void run_aheui(combi **);
 void stack_pop(stack *); 
 int stack_top(stack *);
 void stack_push(stack *,int);
+int stack_size(stack *);
 //queue
 void queue_pop(queue *); 
 int queue_top(queue *);
 void queue_push(queue *,int);
+int queue_size(queue *);
 
 void * data_structure_index(char *);
 int jong_num(char *);
@@ -227,23 +231,28 @@ combi ** tranfer_combi(han ** data) {
 
 void run_aheui(combi ** data) {
 	int i = 0,j = 0;
+	bool turn = 0;
 	void * data_set = st[0];
 	void (* data_set_pop)(void *);
 	int (* data_set_top)(void *);
 	void (* data_set_push)(void *,int);
+	int (* data_set_size)(void *);
+	int prog_i = 0,prog_j = 0;
 	while(1) {
+		turn = 0;
 		//printf("%d %d\n",i,j);
 		if(sw == 0) {
 			data_set_pop = stack_pop;
 			data_set_top = stack_top;
 			data_set_push = stack_push;
+			data_set_size = stack_size;
 		}
 		else {
 			data_set_pop = queue_pop;
 			data_set_top = queue_top;
 			data_set_push = queue_push;
+			data_set_size = queue_size;
 		}
-
 		//ㅇ set
 		if(strcmp(data[i][j].cho,"ㅇ") == 0) {
 			//do nothing
@@ -253,6 +262,10 @@ void run_aheui(combi ** data) {
 		}
 		//ㄷ set
 		else if(strcmp(data[i][j].cho,"ㄷ") == 0) {
+			if(data_set_size(data_set) < 2) {
+				turn = 1;
+				goto TRANS;
+			}
 			int a,b;
 			a = data_set_top(data_set);
 			data_set_pop(data_set);
@@ -261,6 +274,10 @@ void run_aheui(combi ** data) {
 			data_set_push(data_set,a+b);
 		}
 		else if(strcmp(data[i][j].cho,"ㄸ") == 0) {
+			if(data_set_size(data_set) < 2) {
+				turn = 1;
+				goto TRANS;
+			}
 			int a,b;
 			a = data_set_top(data_set);
 			data_set_pop(data_set);
@@ -269,6 +286,10 @@ void run_aheui(combi ** data) {
 			data_set_push(data_set,a*b);
 		}
 		else if(strcmp(data[i][j].cho,"ㅌ") == 0) {
+			if(data_set_size(data_set) < 2) {
+				turn = 1;
+				goto TRANS;
+			}
 			int a,b;
 			a = data_set_top(data_set);
 			data_set_pop(data_set);
@@ -277,6 +298,10 @@ void run_aheui(combi ** data) {
 			data_set_push(data_set,b-a);
 		}
 		else if(strcmp(data[i][j].cho,"ㄴ") == 0) {
+			if(data_set_size(data_set) < 2) {
+				turn = 1;
+				goto TRANS;
+			}
 			int a,b;
 			a = data_set_top(data_set);
 			data_set_pop(data_set);
@@ -285,6 +310,10 @@ void run_aheui(combi ** data) {
 			data_set_push(data_set,b/a);
 		}
 		else if(strcmp(data[i][j].cho,"ㄹ") == 0) {
+			if(data_set_size(data_set) < 2) {
+				turn = 1;
+				goto TRANS;
+			}
 			int a,b;
 			a = data_set_top(data_set);
 			data_set_pop(data_set);
@@ -294,6 +323,10 @@ void run_aheui(combi ** data) {
 		}
 		//ㅁ set
 		else if(strcmp(data[i][j].cho,"ㅁ") == 0) {
+			if(data_set_size(data_set) < 1) {
+				turn = 1;
+				goto TRANS;
+			}
 			if(strcmp(data[i][j].jong,"ㅇ") == 0) {
 				printf("%d",data_set_top(data_set));
 				data_set_pop(data_set);
@@ -325,53 +358,118 @@ void run_aheui(combi ** data) {
 			data_set_push(data_set,data_set_top(data_set));
 		}
 		else if(strcmp(data[i][j].cho,"ㅍ") == 0) {
-			if(sw == 0) {
-				int a,b;
-				a = data_set_top(data_set);
-				data_set_pop(data_set);
-				b = data_set_top(data_set);
-				data_set_pop(data_set);
-				data_set_push(data_set,a);
-				data_set_push(data_set,b);
-			}
+			int a,b;
+			a = data_set_top(data_set);
+			data_set_pop(data_set);
+			b = data_set_top(data_set);
+			data_set_pop(data_set);
+			data_set_push(data_set,a);
+			data_set_push(data_set,b);
 		}
 		//ㅅ set
 		else if(strcmp(data[i][j].cho,"ㅅ") == 0) {
 			data_set = data_structure_index(data[i][j].jong);
 		}
 		else if(strcmp(data[i][j].cho,"ㅆ") == 0) {
+			if(data_set_size(data_set) < 1) {
+				turn = 1;
+				goto TRANS;
+			}
+			int a = data_set_top(data_set);
+			data_set_pop(data_set);
+			data_set_push(data_structure_index(data[i][j].jong),a);
 		}
 		else if(strcmp(data[i][j].cho,"ㅈ") == 0) {
+			if(data_set_size(data_set) < 2) {
+				turn = 1;
+				goto TRANS;
+			}
+			int a,b;
+			a = data_set_top(data_set);
+			data_set_pop(data_set);
+			b = data_set_top(data_set);
+			data_set_pop(data_set);
+			data_set_push(data_set,b>=a);
 		}
 		else if(strcmp(data[i][j].cho,"ㅊ") == 0) {
+			if(data_set_size(data_set) < 1) {
+				turn = 1;
+				goto TRANS;
+			}
+			int a = data_set_top(data_set);
+			if(a == 0) {
+				turn =1;
+				goto TRANS;
+			}
 		}
 
 		//move pointer
+		TRANS :
 
 		if(strcmp(data[i][j].jung,"ㅏ") == 0) {
-			j++;
+			prog_i = 0;
+			prog_j = 1;
 		}
 		else if(strcmp(data[i][j].jung,"ㅓ") == 0) {
-			j--;
+			prog_i = 0;
+			prog_j = -1;
 		}
 		else if(strcmp(data[i][j].jung,"ㅗ") == 0) {
-			i--;
+			prog_i = -1;
+			prog_j = 0;
 		}
 		else if(strcmp(data[i][j].jung,"ㅜ") == 0) {
-			i++;
+			prog_i = 1;
+			prog_j = 0;
 		}
 
-		if(strcmp(data[i][j].jung,"ㅑ") == 0) {
-			j+=2;
+		else if(strcmp(data[i][j].jung,"ㅑ") == 0) {
+			prog_i = 0;
+			prog_j = 2;
 		}
 		else if(strcmp(data[i][j].jung,"ㅕ") == 0) {
-			j-=2;
+			prog_i = 0;
+			prog_j = -2;
 		}
 		else if(strcmp(data[i][j].jung,"ㅛ") == 0) {
-			i-=2;
+			prog_i = -2;
+			prog_j = 0;
 		}
 		else if(strcmp(data[i][j].jung,"ㅠ") == 0) {
-			i+=2;
+			prog_i = 2;
+			prog_j = 0;
+		}
+
+		else if(strcmp(data[i][j].jung,"ㅡ") == 0) {
+			if(prog_j == 0) {
+				i -= prog_i;
+				j -= prog_j;
+				prog_j *= -1;
+			}
+		}
+		else if(strcmp(data[i][j].jung,"ㅣ") == 0) {
+			if(prog_i == 0) {
+				i -= prog_i;
+				j -= prog_j;
+				prog_i *= -1;
+			}
+		}
+		else if(strcmp(data[i][j].jung,"ㅢ") == 0) {
+			i -= prog_i;
+			j -= prog_j;
+			prog_i *= -1;
+			prog_j *= -1;
+		}
+		if(turn) {
+			i -= prog_i;
+			j -= prog_j;
+			prog_i *= -1;
+			prog_j *= -1;
+
+		}
+		else {
+			i += prog_i;
+			j += prog_j;
 		}
 	}
 };
@@ -398,6 +496,12 @@ void stack_push(stack * s,int data) {
 		n->next = s->data;
 		s->data = n;
 	}
+}
+
+int stack_size(stack * s) {
+	int i = 0;
+	for(node * n = s->data;n != NULL;i++,n = n->next); 
+	return i;
 }
 
 void queue_pop(queue * q) {
@@ -442,6 +546,11 @@ void queue_push(queue * q,int data) {
 		n->next = q->data;
 		q->data = n;
 	}
+}
+int queue_size(queue * q) {
+	int i = 0;
+	for(node * n = q->data;n != NULL;i++,n = n->next); 
+	return i;
 }
 void * data_structure_index(char * jong) {
 	int index = 0;
