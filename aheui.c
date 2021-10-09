@@ -209,7 +209,7 @@ han ** transfer_han(char * buffer) {
 combi ** tranfer_combi(han ** data) {
 	combi ** data_combi;
 	data_combi = (combi **)malloc(sizeof(combi *)*height);
-	for(int i = 0;i<width;i++) {
+	for(int i = 0;i<height;i++) {
 		data_combi[i] = (combi *)malloc(sizeof(combi) * width);
 	}
 	//malloc memoires
@@ -460,17 +460,16 @@ void run_aheui(combi ** data) {
 			prog_i *= -1;
 			prog_j *= -1;
 		}
+		if(i + prog_i < 0 || j + prog_j<0 || i + prog_i>=height || j + prog_j>= width) {
+			turn = 1;
+		}
 		if(turn) {
-			i -= prog_i;
-			j -= prog_j;
 			prog_i *= -1;
 			prog_j *= -1;
 
 		}
-		else {
-			i += prog_i;
-			j += prog_j;
-		}
+		i += prog_i;
+		j += prog_j;
 	}
 };
 
